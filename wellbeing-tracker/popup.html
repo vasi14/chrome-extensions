@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+  <title>Wellbeing Tracker</title>
+</head>
+<body>
+  <div class="window-controls">
+    <button id="theme-toggle" title="Toggle Theme">☀️</button>
+    <div class="minimal-focus-toggle" id="focus-toggle-btn" title="Toggle Focus Mode">
+      <span>Focus</span>
+      <div class="toggle-switch" id="focus-switch">
+         <div class="toggle-thumb"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="dashboard-panel">
+    <header>
+      <h1>Wellbeing Tracker</h1>
+      <p class="subtitle" id="current-date"></p>
+    </header>
+
+    <div class="view-toggles">
+      <button id="btn-daily" class="active">Daily</button>
+      <button id="btn-weekly">Weekly</button>
+      <button id="btn-options" title="Settings">⚙️ Setting</button>
+    </div>
+
+    <div class="summary-card">
+      <h2 id="total-label">Total Time Today</h2>
+      <h1 id="total-time">0h 0m</h1>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="categoryChart"></canvas>
+    </div>
+
+    <div class="categories" id="categories-container"></div>
+  </div>
+
+  <div class="container" id="settings-panel" style="display: none; overflow-y:auto; padding-right:5px;">
+    <header>
+      <h1>Limits & Focus Setup</h1>
+      <p class="subtitle">Set boundaries and distracting links.</p>
+    </header>
+
+    <div class="settings-list" id="limits-container"></div>
+    
+    <div style="margin-top:10px; border-top: 1px solid var(--border-col); padding-top:15px;">
+      <h2 style="font-size:0.85rem; margin-top:0;">Distracting Links (Focus Mode)</h2>
+      <div style="display:flex; gap:8px; margin-bottom: 10px;">
+         <input type="text" id="new-link-input" placeholder="e.g. reddit.com" style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-col); background:rgba(0,0,0,0.2); color:var(--text-primary); font-size:0.8rem; font-family:inherit;">
+         <button id="add-link-btn" class="save-btn" style="width:auto; padding:8px 12px;">Add</button>
+      </div>
+      <div id="distracting-links-container" style="display:flex; flex-direction:column; gap:6px; min-height:50px;"></div>
+    </div>
+
+    <button id="save-settings-btn" class="save-btn" style="margin-top:15px; flex-shrink:0;">Save Settings & Back</button>
+  </div>
+
+  <script src="chart.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

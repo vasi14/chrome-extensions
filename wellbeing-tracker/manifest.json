@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Wellbeing Tracker",
+  "version": "1.0",
+  "description": "Track your daily web usage and categorize your time automatically.",
+  "permissions": [
+    "tabs",
+    "storage",
+    "idle",
+    "alarms",
+    "notifications",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {},
+  "icons": {
+    "128": "icons/icon128.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  }
+}
