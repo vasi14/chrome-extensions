@@ -59,6 +59,9 @@ async function loadData() {
   if (fData.focusMode) focusBanner.classList.add('active');
   else focusBanner.classList.remove('active');
 
+  // Load Alerts
+  updateAlertsUI();
+
   if (currentMode === "daily") {
     const todayStr = getDateKey(0);
     const data = await chrome.storage.local.get([todayStr]);
@@ -88,6 +91,38 @@ async function loadData() {
     });
     renderUI(aggCat, aggDom);
   }
+}
+
+async function updateAlertsUI() {
+  const data = await chrome.storage.local.get("wellbeingAlerts");
+  const alerts = data.wellbeingAlerts || [];
+  const unreadCount = alerts.filter(a => !a.read).length;
+  
+  const badge = document.getElementById('alert-badge');
+  if (unreadCount > 0) {
+    badge.innerText = unreadCount;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  const listContainer = document.getElementById('alerts-list-container');
+  listContainer.innerHTML = '';
+  
+  if (alerts.length === 0) {
+    listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary); font-size:0.85rem;">No alerts right now. Stay focused!</div>';
+    return;
+  }
+
+  alerts.forEach(alert => {
+    const div = document.createElement('div');
+    div.className = `alert-item ${alert.read ? 'read' : 'unread'}`;
+    div.innerHTML = `
+      <div class="alert-msg">${alert.message}</div>
+      <div class="alert-time">${alert.timestamp}</div>
+    `;
+    listContainer.appendChild(div);
+  });
 }
 
 function renderUI(categoriesData, domainsData) {
@@ -248,6 +283,40 @@ document.addEventListener('DOMContentLoaded', () => {
   updateDateHeader();
   loadData();
 
+  // Alert Click Overlay Toggle
+  document.getElementById('alert-trigger').addEventListener('click', async () => {
+    const dash = document.getElementById('dashboard-panel');
+    const setPan = document.getElementById('settings-panel');
+    const alertPan = document.getElementById('alerts-panel');
+    const optBtn = document.getElementById('btn-options');
+    
+    if (alertPan.style.display === 'none') {
+       // Open Alerts
+       dash.style.display = 'none';
+       setPan.style.display = 'none';
+       alertPan.style.display = 'flex';
+       optBtn.innerText = '⟵ Back';
+
+       // Mark all as read
+       const data = await chrome.storage.local.get("wellbeingAlerts");
+       const alerts = (data.wellbeingAlerts || []).map(a => ({...a, read: true}));
+       await chrome.storage.local.set({ wellbeingAlerts: alerts });
+       updateAlertsUI();
+    } else {
+       // Toggle back to dashboard
+       dash.style.display = 'flex';
+       alertPan.style.display = 'none';
+       optBtn.innerText = '⚙️ Setting';
+    }
+  });
+
+  document.getElementById('clear-alerts-btn').addEventListener('click', async () => {
+    await chrome.storage.local.set({ wellbeingAlerts: [] });
+    updateAlertsUI();
+    // Go back automatically
+    document.getElementById('alert-trigger').click();
+  });
+
   // Focus Toggle Logic
   const focusBanner = document.getElementById('focus-toggle-btn');
   focusBanner.addEventListener('click', async () => {
@@ -286,10 +355,22 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-options').addEventListener('click', async () => {
     const dash = document.getElementById('dashboard-panel');
     const setPan = document.getElementById('settings-panel');
+    const alertPan = document.getElementById('alerts-panel');
+    const optBtn = document.getElementById('btn-options');
+
+    // If on alerts, back takes to dashboard
+    if (alertPan.style.display !== 'none') {
+       alertPan.style.display = 'none';
+       dash.style.display = 'flex';
+       optBtn.innerText = '⚙️ Setting';
+       return;
+    }
+
     if (dash.style.display !== 'none') {
        dash.style.display = 'none';
+       alertPan.style.display = 'none';
        setPan.style.display = 'flex';
-       document.getElementById('btn-options').innerText = '⟵ Back';
+       optBtn.innerText = '⟵ Back';
        
        const data = await chrome.storage.local.get(["categoryLimits", "distractingLinks"]);
        const limits = data.categoryLimits || {};
@@ -312,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
        // Close via quick toggle back
        dash.style.display = 'flex';
        setPan.style.display = 'none';
-       document.getElementById('btn-options').innerText = '⚙️ Setting';
+       optBtn.innerText = '⚙️ Setting';
     }
   });
 

@@ -7,7 +7,13 @@
 </head>
 <body>
   <div class="window-controls">
-    <button id="theme-toggle" title="Toggle Theme">☀️</button>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button id="theme-toggle" title="Toggle Theme">☀️</button>
+      <div id="alert-trigger" class="alert-icon-wrapper" title="View alerts">
+         <span style="font-size:1.1rem;">🔔</span>
+         <span id="alert-badge" class="alert-badge" style="display:none;">0</span>
+      </div>
+    </div>
     <div class="minimal-focus-toggle" id="focus-toggle-btn" title="Toggle Focus Mode">
       <span>Focus</span>
       <div class="toggle-switch" id="focus-switch">
@@ -38,6 +44,18 @@
     </div>
 
     <div class="categories" id="categories-container"></div>
+  </div>
+
+  <!-- Alerts Panel -->
+  <div class="container" id="alerts-panel" style="display: none;">
+    <header>
+      <h1>Alerts Inbox</h1>
+      <p class="subtitle">History of your wellbeing reminders and limits.</p>
+    </header>
+    <div id="alerts-list-container" class="alerts-list">
+      <!-- Alerts populated dynamically -->
+    </div>
+    <button id="clear-alerts-btn" class="save-btn" style="margin-top:15px; background:#ef4444;">Clear All Alerts</button>
   </div>
 
   <div class="container" id="settings-panel" style="display: none; overflow-y:auto; padding-right:5px;">

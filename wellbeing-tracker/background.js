@@ -69,6 +69,18 @@ async function playGentleSoundInActiveTab() {
   }).catch(() => {});
 }
 
+async function addAlert(message) {
+  const data = await chrome.storage.local.get("wellbeingAlerts");
+  const alerts = data.wellbeingAlerts || [];
+  alerts.unshift({
+    id: Date.now(),
+    message,
+    timestamp: new Date().toLocaleTimeString(),
+    read: false
+  });
+  await chrome.storage.local.set({ wellbeingAlerts: alerts.slice(0, 50) }); // keep last 50
+}
+
 async function saveCurrentTime() {
   if (!activeUrl || isIdle || !startTime) return;
 
@@ -104,12 +116,8 @@ async function saveCurrentTime() {
   const limitMs = (limits[category] || 0) * 60 * 1000;
   
   if (limitMs > 0 && newMs >= limitMs && !todayNotified[category]) {
-    chrome.notifications.create({
-      type: "basic",
-      iconUrl: "icon.png",
-      title: "Wellbeing Tracker Limit",
-      message: `You've reached your daily limit of ${limits[category]} mins for ${category}.`
-    });
+    const msg = `Daily limit reached for ${category} (${limits[category]} mins).`;
+    await addAlert(msg);
     playGentleSoundInActiveTab();
 
     todayNotified[category] = true;
@@ -120,12 +128,8 @@ async function saveCurrentTime() {
     const currentMins = Math.floor(newMs / (60 * 1000));
     
     if (currentMins > 0 && currentMins % 10 === 0 && prevMins < currentMins) {
-      chrome.notifications.create({
-        type: "basic",
-        iconUrl: "icon.png",
-        title: "Gentle Reminder",
-        message: `You've spent ${currentMins} mins on ${category} today.`
-      });
+      const msg = `You've spent ${currentMins} mins on ${category} today.`;
+      await addAlert(msg);
       playGentleSoundInActiveTab();
     }
   }
@@ -162,7 +166,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     updateActiveTab();
   }
 
-  // Focus Mode Blocking Logic
   if (changeInfo.status === 'loading' && tab.url && tab.url.startsWith('http')) {
      const data = await chrome.storage.local.get(["focusMode", "distractingLinks"]);
      if (data.focusMode && data.distractingLinks && data.distractingLinks.length > 0) {
@@ -204,7 +207,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
                        });
                    },
                    args: [hostname]
-               }).catch(()=>{}); // Ignore restricted pages
+               }).catch(()=>{}); 
             }
         } catch(e) {}
      }

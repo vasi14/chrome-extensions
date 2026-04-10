@@ -15,7 +15,7 @@ The `wellbeing-tracker` extension provides:
 - **Activity dashboards (daily & weekly)**: category-based summaries and trends with both daily and weekly views.
 - **Focus Mode**: add distracting websites to a focus/block list; when enabled, those sites are prevented from opening to help maintain concentration.
 - **Dark / Light theme toggle**: switch the popup and options UI between dark and light modes.
-- **Category limits & gentle reminders**: set daily time limits per category and receive gentle reminders when approaching or exceeding those limits.
+- **Alert options for category limits**: set daily time limits per category and receive gentle reminders when approaching or exceeding those limits in an alert window.
 - **Popup dashboard** for quick visibility into current metrics and progress toward limits.
 - **Options page** to configure categories, focus list, themes, limits, and reminder preferences.
 - **Visual charts** for activity trends and summaries.
