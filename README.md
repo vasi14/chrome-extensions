@@ -1,6 +1,6 @@
 # Chrome Extensions (EAG-V3)
 
-Youtube Ddemo link: https://youtu.be/bWzRWP4mrA0
+Youtube Demo link: https://youtu.be/bWzRWP4mrA0
 
 This repository contains Chrome extensions developed as part of the **EAG-V3** initiative.
 
